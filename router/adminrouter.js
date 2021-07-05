@@ -14,7 +14,7 @@ router.get('/getallTags',middleware.requireLogin,admincontroller.getallTags)
 router.get('/getcommentById/:id',middleware.requireLogin,admincontroller.getcommentById)
 router.get('/currentDay',middleware.requireLogin,admincontroller.currentDay)
 router.get('/currentMonth',middleware.requireLogin,admincontroller.currentMonth)
-
+router.get('/registered_user',middleware.requireLogin,admincontroller.registeredUsers)
 
 
 

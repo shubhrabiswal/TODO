@@ -86,24 +86,6 @@ exports.updatetodo = async (req, res) => {
         .catch(err =>
             res.status(400).json({ error: err })
         )
-    // const result = await Todo.findAll({where:{id:id}}).on('success', function (todo) {
-    //     // Check if record exists in db
-    //     if (todo) {
-    //       todo.update({
-    //             title: title,
-    //             category: category,
-    //             status: status
-    //       })
-    //       .success(function () {})
-    //     }
-    //   })
-
-    //   if(result){
-    //     console.log(result);
-    //             res.status(200).json({ message: result });
-    //   }else{
-    //     res.status(400).json({ error: e });
-    //   }
 };
 
 

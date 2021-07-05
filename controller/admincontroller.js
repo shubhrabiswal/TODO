@@ -1,6 +1,8 @@
 const express = require('express')
 // const mongoose = require('mongoose')
 const passport = require('passport')
+const env = require('dotenv')
+env.config();
 const db = require("../Models");
 const User = db.user;
 const ActiveUser = db.activeuser;
@@ -13,6 +15,7 @@ const Comment = db.comment;
 const Tag = db.tag;
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs')
+
 let startDate = new Date();
 const months = [
   "January",
@@ -33,19 +36,20 @@ const month = months[startDate.getMonth()]; // 0 to 11 index
 const month1 = startDate.getMonth();
 const year = startDate.getFullYear();
 const fullDate = day + " " + month + " " + year;
-const currentDate = month1 + 1 + "/" + day + "/" + year;
+const currentDate = month1 + 1 + "/" + day + "/" + year;/////genertae current date
 
+/////////generate token
 genToken = user => {
     return jwt.sign({
-      iss: 'Joan_Louji',
+      iss: 'Shubhra_B',
       sub: user.id,
       iat: new Date().getTime(),
       exp: new Date().setDate(new Date().getDate() + 1)
-    }, 'joanlouji');
+    }, process.env.SECRET);
   }
 
 
-
+///////////////////controller to register admin//////////
 exports.adminRegister = async function (req, res, next) {
     const { name, email, password } = req.body;
     const newAdmin = new db.admin({ name, email, password })
@@ -65,6 +69,8 @@ exports.adminRegister = async function (req, res, next) {
     })
 }
 
+
+///////////////////controller for admin login//////////
 exports.adminLogin = async function (req, res, next) {
     const { email, password } = req.body;
 
@@ -89,7 +95,6 @@ exports.adminLogin = async function (req, res, next) {
                 //     }
                 //   );
                 res.status(200).json({ token, adminid: admin.id })
-                console.log("active usr", active_usr.count)
             }
             else {
                 return res.status(403).json({ message: "Wrong Password" });
@@ -100,7 +105,7 @@ exports.adminLogin = async function (req, res, next) {
 }
 
 
-
+///////////////////controller to get all todos created//////////
 exports.getalltodo = async (req, res) => {
     const todo = await Todo.findAll();
 
@@ -108,6 +113,7 @@ exports.getalltodo = async (req, res) => {
 
 }
 
+///////////////////controller to get all users//////////
 exports.getalluser = async (req, res) => {
     const user = await User.findAll();
 
@@ -115,6 +121,8 @@ exports.getalluser = async (req, res) => {
 
 }
 
+
+///////////////////controller to get all tags//////////
 exports.getallTags = async (req, res) => {
     const tag = await Tag.findAll()
         if(tag) {
@@ -123,8 +131,9 @@ exports.getallTags = async (req, res) => {
         }
 }
 
-///comments///
 
+
+///////////////////controller to get all comments posted by a user//////////
 exports.getcommentById = async (req, res) => {
     let id = req.params.id;
     const comment = await Comment.findAll({where:{ posted_by: id }})
@@ -134,6 +143,7 @@ exports.getcommentById = async (req, res) => {
 }
 
 
+///////////////////controller to get all comments posted for a todo task//////////
 exports.getcommentByTodoId = async (req, res) => {
     let id = req.params.id;
     const comment = await Comment.findAll({where:{ todo_id: id }})
@@ -142,7 +152,7 @@ exports.getcommentByTodoId = async (req, res) => {
         }
 }
 
-////////////Active users details//////////////////////////
+////////////controller to get all Active users details of the current day//////////////////////////
 
 exports.currentDay = async (req,res) => {
     const active = await ActiveUser.findAndCountAll({where:{day:day}})
@@ -154,6 +164,7 @@ exports.currentDay = async (req,res) => {
         }
 }
 
+////////////controller to get all Active users details of the current month//////////////////////////
 exports.currentMonth = async (req,res) => {
     const active = await ActiveUser.findAndCountAll({where:{month:month}})
         if(active) {
@@ -162,4 +173,14 @@ exports.currentMonth = async (req,res) => {
         if (err) {
             res.status(400).json({ActiveUsersByMonth:"No active users found"})
         }
+}
+
+////////////controller to get all registered users on the current day//////////////////////////
+exports.registeredUsers = async (req,res) =>{
+    const user = await User.findAndCountAll({where:{date:currentDate}});
+      if(user) {
+        res.status(200).json({todayRegistered:user.count})
+      } if (err) {
+        res.status(400).json({message:"No User Registered on today"})
+      } 
 }
